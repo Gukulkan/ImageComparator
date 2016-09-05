@@ -3,6 +3,8 @@ package com.imgcomparator;
 import com.imgcomparator.file.FileService;
 import com.imgcomparator.images.ImageProcessor;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Main {
@@ -24,9 +26,20 @@ public class Main {
         }
 
 
+
         if(imageFinal != null){
             FileService.saveImage(imageFinal);
-        }
+            buildFrame(imageFinal);
 
+        }
+    }
+
+    private static void buildFrame( BufferedImage image) {
+        JFrame frame = new JFrame();
+        frame.getContentPane().setLayout(new FlowLayout());
+        frame.getContentPane().add(new JLabel(new ImageIcon(image)));
+        frame.setSize(image.getWidth(), image.getHeight());
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
