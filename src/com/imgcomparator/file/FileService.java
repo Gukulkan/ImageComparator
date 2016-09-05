@@ -21,7 +21,12 @@ public class FileService {
     }
 
     public static void saveImage(BufferedImage image){
-
+        File outfile = new File("C:\\Projects\\ImageComparator\\saved.png");
+        try {
+            ImageIO.write(image, "png", outfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -8,8 +8,8 @@ import java.awt.image.BufferedImage;
 public class Main {
     public static void main(String[] args) {
 
-        BufferedImage image1 = FileService.loadImage("c:\\1.png");;
-        BufferedImage image2 = FileService.loadImage("c:\\2.png");;
+        BufferedImage image1 = FileService.loadImage("C:\\Projects\\ImageComparator\\image1.png");;
+        BufferedImage image2 = FileService.loadImage("C:\\Projects\\ImageComparator\\image2.png");;
 
         BufferedImage imageFinal = null;
 
@@ -25,7 +25,7 @@ public class Main {
 
 
         if(imageFinal != null){
-            System.out.println("draw file");
+            FileService.saveImage(imageFinal);
         }
 
     }
