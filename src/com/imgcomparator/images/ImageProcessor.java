@@ -1,7 +1,7 @@
 package com.imgcomparator.images;
 
 import com.imgcomparator.entity.Point;
-import com.sun.prism.paint.Color;
+import javafx.util.Pair;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -9,6 +9,11 @@ import java.util.*;
 import java.util.List;
 
 public class ImageProcessor {
+
+    private static final int AROUND_DIFFERENT_PIXEL = 20;
+    private static final int ADDITIONAL_TO_RECT_SIZE = 15;
+    private static final int ADDITIONAL_TO_RECT_CORDINATES = 10;
+    private static final int DIFF_PERCENT = 10;
 
     public boolean isImagesEquals(BufferedImage image1, BufferedImage image2){
         if(image1 == null || image2 == null)
@@ -21,7 +26,7 @@ public class ImageProcessor {
 
         for (int x = 0; x < image1.getWidth(); x++){
             for (int y = 0; y < image1.getHeight(); y++){
-                if(Math.abs((image1.getRGB(x,y) / image2.getRGB(x,y)) * 100 ) < 10)
+                if(isDiffInPercent(image1.getRGB(x,y), image2.getRGB(x,y)))
                     return false;
             }
         }
@@ -29,14 +34,16 @@ public class ImageProcessor {
         return true;
     }
 
+    private boolean isDiffInPercent(int rgb1, int rgb2) {
+        return Math.abs((rgb1 /  rgb2) * 100 ) < DIFF_PERCENT;
+    }
+
     public BufferedImage getComparedImage(BufferedImage image1, BufferedImage image2) {
-
-//        List<Point> diffPoints = new ArrayList<>();
-
         boolean points[][] = new boolean[image1.getWidth()][image1.getHeight()];
+
         for (int x = 0; x < image1.getWidth(); x++){
             for (int y = 0; y < image1.getHeight(); y++){
-                if(Math.abs((image1.getRGB(x,y) / image2.getRGB(x,y)) * 100 ) < 10)
+                if(isDiffInPercent(image1.getRGB(x,y), image2.getRGB(x,y)))
                     points[x][y] = true;
             }
         }
@@ -47,34 +54,39 @@ public class ImageProcessor {
     }
 
     private BufferedImage drawRedRec(BufferedImage image, boolean points[][]){
-
-        int startX = 0;
-        int startY = 0;
+        List<Pair<Point, Point>> rects = new ArrayList<>();
         for (int i = 0; i < image.getWidth() - 1; i++){
             for (int j = 0; j < image.getHeight() - 1; j++){
                 if(points[i][j]){
-                    startX = i;
-                    startY = j;
-                    Point p = findFinishForBlock(points, startX, startY);
-                    Graphics2D g = image.createGraphics();
-                    g.setColor(java.awt.Color.RED);
-                    g.drawRect(startX - 10, startY - 10,
-                            p.getX() - startX + 15, p.getY() - startY + 15);
-                    i = p.getX();
-                    j = p.getY();
+                    Point start = new Point(i, j);
+                    Point end = findFinishForBlock(points, i, j);
 
-                }
+                    rects.add(new Pair<>(start,end));
+                    i = end.getX();
+                    j = end.getY();
 
+        }
 
-            }
+    }
+}
+
+    Graphics2D g = image.createGraphics();
+g.setColor(java.awt.Color.RED);
+        for (Pair<Point, Point> rect : rects){
+        g.drawRect(
+                    rect.getKey().getX() - ADDITIONAL_TO_RECT_CORDINATES,
+                    rect.getKey().getY() - ADDITIONAL_TO_RECT_CORDINATES,
+                    rect.getValue().getX() - rect.getKey().getX() + ADDITIONAL_TO_RECT_SIZE,
+                    rect.getValue().getY() - rect.getKey().getY() + ADDITIONAL_TO_RECT_SIZE
+            );
         }
 
         return image;
     }
 
     private Point findFinishForBlock(boolean points[][], int startX, int startY){
-        for (int x = startX; x < startX + 20; x++){
-            for (int y = startY; y < startY + 20; y++) {
+        for (int x = startX - AROUND_DIFFERENT_PIXEL; x < startX + AROUND_DIFFERENT_PIXEL; x++){
+            for (int y = startY - AROUND_DIFFERENT_PIXEL; y < startY + AROUND_DIFFERENT_PIXEL; y++) {
                 if (points[x][y]) {
                     startX = x;
                     startY = y;
