@@ -1,0 +1,13 @@
+Pluses:
+- The app works at least in some way.
+- Algorithm works with rectangles rather than pixels for optimal performance (with critical bugs).
+- Images of different sizes are processed.
+- Has UI (primitive).
+
+Minuses:
+- Code smells. Service should not be a utility or utility should not be named, as a service. Formatting issues. Long methods with mixed responsibilities. Hard-coded paths to files.
+- Runnable file, which is the part of the expected deliverables, is missed.
+- Color comparison is incorrect. Color components are stored in bytes (int = 4 bytes; 1 byte per a color – alpha, red, green, blue):
+dark-dark-red: 0 50 0 0 - in integer form will be equal to 3276800
+dark-dark-green: 0 0 50 0 - in integer form will be equal to 12800
+Mathematical operations with original integers are senseless.
